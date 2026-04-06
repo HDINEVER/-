@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
+@import "react-grid-layout/css/styles.css";
+@import "react-resizable/css/styles.css";
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Noto Sans SC", "Chakra Petch", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Chakra Petch", "Noto Sans SC", sans-serif;
+
+  --color-ak-black: #111111;
+  --color-ak-dark: #1f1f1f;
+  --color-ak-gray: #333333;
+  --color-ak-light: #e0e0e0;
+  --color-ak-white: #f5f5f5;
+  --color-ak-yellow: #ffcc00;
+  --color-ak-orange: #ff5500;
+  --color-ak-blue: #00c3ff;
+  --color-ak-red: #ff3333;
+}
+
+@layer utilities {
+  .clip-chamfer {
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  }
+  .clip-chamfer-tl-br {
+    clip-path: polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px);
+  }
+  .clip-chamfer-tr-bl {
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  }
+  .bg-stripes {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 10px,
+      rgba(255, 204, 0, 0.1) 10px,
+      rgba(255, 204, 0, 0.1) 20px
+    );
+  }
+  .bg-stripes-dark {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 10px,
+      rgba(0, 0, 0, 0.2) 10px,
+      rgba(0, 0, 0, 0.2) 20px
+    );
+  }
+}
+
+body {
+  background-color: var(--color-ak-black);
+  color: var(--color-ak-white);
+  font-family: var(--font-sans);
+}
+
+/* Custom React Grid Layout Styles */
+.react-resizable-handle {
+  background-image: none !important;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.react-grid-item:hover .react-resizable-handle {
+  opacity: 1;
+}
+.react-resizable-handle::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: 16px;
+  height: 16px;
+  border-right: 3px solid var(--color-ak-blue);
+  border-bottom: 3px solid var(--color-ak-blue);
+}
+.react-grid-item.react-grid-placeholder {
+  background: var(--color-ak-blue) !important;
+  opacity: 0.2 !important;
+  border-radius: 0 !important;
+}

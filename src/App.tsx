@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import html2canvas from 'html2canvas';
-import { Download, Plus } from 'lucide-react';
+import { Download, Plus, RotateCcw } from 'lucide-react';
 import { Responsive as ResponsiveGridLayout } from 'react-grid-layout';
 import type { Layout } from 'react-grid-layout';
 import { Product } from './types';
@@ -62,11 +62,51 @@ const INITIAL_PRODUCTS: Product[] = [
 ];
 
 export default function App() {
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>(() => {
+    const saved = localStorage.getItem('ak_products');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing saved products:', e);
+      }
+    }
+    return INITIAL_PRODUCTS;
+  });
+  
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [posterTitle, setPosterTitle] = useState('COMIC MARKET 104');
-  const [posterSubtitle, setPosterSubtitle] = useState('明日方舟 官方正版周边');
+  
+  const [posterTitle, setPosterTitle] = useState(() => {
+    return localStorage.getItem('ak_poster_title') || 'COMIC MARKET 104';
+  });
+  
+  const [posterSubtitle, setPosterSubtitle] = useState(() => {
+    return localStorage.getItem('ak_poster_subtitle') || '明日方舟 官方正版周边';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('ak_products', JSON.stringify(products));
+  }, [products]);
+
+  useEffect(() => {
+    localStorage.setItem('ak_poster_title', posterTitle);
+  }, [posterTitle]);
+
+  useEffect(() => {
+    localStorage.setItem('ak_poster_subtitle', posterSubtitle);
+  }, [posterSubtitle]);
+
+  const handleResetData = () => {
+    if (window.confirm('确定要清除所有数据并恢复为系统默认吗？')) {
+      localStorage.removeItem('ak_products');
+      localStorage.removeItem('ak_poster_title');
+      localStorage.removeItem('ak_poster_subtitle');
+      setProducts(INITIAL_PRODUCTS);
+      setPosterTitle('COMIC MARKET 104');
+      setPosterSubtitle('明日方舟 官方正版周边');
+    }
+  };
   
   const posterRef = useRef<HTMLDivElement>(null);
 
@@ -150,6 +190,13 @@ export default function App() {
           </h1>
         </div>
         <div className="flex gap-3">
+          <button
+            onClick={handleResetData}
+            title="清除缓存并重置数据"
+            className="flex items-center justify-center w-10 h-10 border border-ak-gray text-ak-white hover:text-ak-yellow hover:border-ak-yellow transition-colors"
+          >
+            <RotateCcw size={16} />
+          </button>
           <button
             onClick={openNewProductModal}
             className="flex items-center gap-2 px-4 py-2 bg-ak-gray hover:bg-ak-light hover:text-ak-black transition-colors font-mono text-sm uppercase"

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Product } from '../types';
 import { cn } from '../lib/utils';
 import { Edit2, GripHorizontal } from 'lucide-react';
@@ -11,6 +11,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onEdit, onSizeChange, className }: ProductCardProps) {
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     if (onSizeChange) {
@@ -18,13 +20,35 @@ export function ProductCard({ product, onEdit, onSizeChange, className }: Produc
     }
   };
 
+  const handleTouchStart = () => {
+    timerRef.current = setTimeout(() => {
+      if (onSizeChange) {
+        onSizeChange(product);
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+          navigator.vibrate(50);
+        }
+      }
+    }, 500);
+  };
+
+  const clearTouchTimer = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+  };
+
   return (
     <div
       onContextMenu={handleContextMenu}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={clearTouchTimer}
+      onTouchMove={clearTouchTimer}
+      onTouchCancel={clearTouchTimer}
       className={cn(
-        "group relative overflow-hidden bg-ak-dark border border-ak-gray transition-colors duration-300 hover:border-ak-blue clip-chamfer-tr-bl flex flex-col h-full w-full",
+        "group relative overflow-hidden bg-ak-dark border border-ak-gray transition-colors duration-300 hover:border-ak-blue clip-chamfer-tr-bl flex flex-col h-full w-full select-none",
         className
       )}
+      style={{ WebkitTouchCallout: 'none' } as React.CSSProperties}
     >
       {/* Drag Handle */}
       <div className="absolute top-0 right-0 z-30 p-2 cursor-move opacity-0 group-hover:opacity-100 transition-opacity drag-handle bg-ak-black/60 rounded-bl-lg backdrop-blur-sm">
